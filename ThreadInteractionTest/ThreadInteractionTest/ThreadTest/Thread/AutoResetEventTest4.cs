@@ -34,8 +34,9 @@ namespace ThreadInteractionTest
                 }
                 stopwatch.Stop();
                 Console.WriteLine($"消耗时间：{stopwatch.ElapsedMilliseconds},第{i}轮");
-                _threadList.ForEach(x => x.Interrupt());
+                // 此时所有线程都走完了
                 //_autoResetEventList.ForEach(x => x.Set());
+                //_threadList.ForEach(x => x.Interrupt());
             }
 
         }
@@ -62,6 +63,7 @@ namespace ThreadInteractionTest
                         {
                             Console.WriteLine($"{_count++:d5} {Thread.CurrentThread.Name}");
                         }
+                        // 超过maxloop后继续释放线程，使之所有线程都能走完
                         if (index == _threadCount - 1)
                         {
                             _autoResetEventList[0].Set();
