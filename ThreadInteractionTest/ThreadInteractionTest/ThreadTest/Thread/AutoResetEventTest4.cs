@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Diagnostics;
+using System.Linq;
 using System.Text;
 using System.Threading;
 
@@ -27,12 +28,14 @@ namespace ThreadInteractionTest
                 stopwatch.Start();
                 _count = 0;
                 Init();
-                while (_threadList.Exists(x => x.ThreadState == System.Threading.ThreadState.Running))
+                while (_threadList.Any(x => x.ThreadState != System.Threading.ThreadState.Stopped))
                 {
                     Thread.Sleep(1);
                 }
                 stopwatch.Stop();
-                Console.WriteLine($"消耗时间：{stopwatch.ElapsedMilliseconds}");
+                Console.WriteLine($"消耗时间：{stopwatch.ElapsedMilliseconds},第{i}轮");
+                _threadList.ForEach(x => x.Interrupt());
+                //_autoResetEventList.ForEach(x => x.Set());
             }
 
         }
@@ -48,8 +51,8 @@ namespace ThreadInteractionTest
             }
             for (int i = 0; i < _threadCount; i++)
             {
-                var index = i;
-                var str = $"线程{i}号";
+                var index = i; // 闭包问题
+                var str = $"线程{i:d3}号";
                 var thread = new Thread(() =>
                 {
                     while (_count <= _maxLoop)
